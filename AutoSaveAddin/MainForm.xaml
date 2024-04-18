@@ -1,0 +1,43 @@
+﻿<Window x:Class="AutoSaveAddin.MainForm"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AutoSaveAddin"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:AutoSaveAddin.Converters"
+             mc:Ignorable="d"        
+             d:DesignHeight="450" d:DesignWidth="800" Closing="Window_Closing" Loaded="Window_Loaded" Title="Настройка автосохранения">
+    <Window.Resources>
+        <converters:TimeSpanToMinConverter x:Key="TimeSpanToMinConverter" />
+        <converters:TimeSpanToSecConverter x:Key="TimeSpanToSecConverter" />
+    </Window.Resources>
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Grid.Column="0" Grid.Row="0" Text="Функция автосохранения" VerticalAlignment="Center"/>
+        <CheckBox Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" IsChecked="{Binding Settings.Enabled}"/>
+        
+        <TextBlock Grid.Column="0" Grid.Row="1" Text="Запрос при сохранении" VerticalAlignment="Center"/>
+        <CheckBox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" IsChecked="{Binding Settings.IsNeedRequest}"/>
+        
+        <TextBlock Grid.Column="0" Grid.Row="2" Text="Интервал между сохранениями, мин" VerticalAlignment="Center"/>
+        <TextBox Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Text="{Binding Settings.Delay, Converter={StaticResource TimeSpanToMinConverter}}"/>
+        
+        <TextBlock Grid.Column="0" Grid.Row="3" Text="Ожидание ответа при запросе, сек" VerticalAlignment="Center"/>
+        <TextBox Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Text="{Binding Settings.CloseDelay, Converter={StaticResource TimeSpanToSecConverter}}"/>
+        
+        <Button Content="Сохранить" Grid.ColumnSpan="2" Grid.Row="4" Width="100" Margin="3" Command="{Binding SaveCommand}"/>
+    </Grid>
+</Window>
