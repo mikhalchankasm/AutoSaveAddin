@@ -7,7 +7,7 @@
              xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:AutoSaveAddin.Converters"
              mc:Ignorable="d"        
-             d:DesignHeight="450" d:DesignWidth="800" Closing="Window_Closing" Loaded="Window_Loaded" Title="Настройка автосохранения">
+             Height="230" Width="525" ResizeMode="NoResize" Closing="Window_Closing" Loaded="Window_Loaded" Title="Настройка автосохранения">
     <Window.Resources>
         <converters:TimeSpanToMinConverter x:Key="TimeSpanToMinConverter" />
         <converters:TimeSpanToSecConverter x:Key="TimeSpanToSecConverter" />

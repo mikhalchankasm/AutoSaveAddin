@@ -3,6 +3,8 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.Integration;
+using System.Windows.Threading;
 using AutoIt;
 using AutoSaveAddin.Model;
 using Aveva.Core.Utilities.CommandLine;
@@ -14,10 +16,12 @@ namespace AutoSaveAddin
     public static class AutoSaveServer
     {
         private static ILogger Logger;
+        private static Dispatcher _mainThreadDispatcher;
 
         static AutoSaveServer()
         {
             Logger = LogManager.GetCurrentClassLogger();
+            _mainThreadDispatcher = Dispatcher.CurrentDispatcher;
         }
         
         private static bool _running;
@@ -61,31 +65,63 @@ namespace AutoSaveAddin
             while (_running)
             {
                 Thread.Sleep((int)_settings.Delay.TotalMilliseconds);
+                if(!_settings.Enabled) continue;
 
                 bool saving = true;
-                Task<DialogResult> task = Task.Run(() =>
+                if (_settings.IsNeedRequest)
                 {
-                    return MessageBox.Show(Text, Title, MessageBoxButtons.YesNo);
-                });
+                    bool? result = _mainThreadDispatcher.Invoke(() =>
+                    {
+                        MessageBoxViewModel vm = new MessageBoxViewModel();
+                        vm.Time = (int)_settings.CloseDelay.TotalSeconds;
+                        MessageBoxT mb = new MessageBoxT
+                        {
+                            DataContext = vm
+                        };
+                        ElementHost.EnableModelessKeyboardInterop(mb);
+                        return mb.ShowDialog();
+                    });
 
-                Thread.Sleep((int)_settings.CloseDelay.TotalMilliseconds);
-                if (!task.IsCompleted)
-                {
-                    IntPtr handle = AutoItX.WinGetHandle("Подтверждение");
-                    AutoItX.WinActivate(handle);
-                    AutoItX.Send("{Enter}");
-                }
+                    saving = result.Value;
 
-                DialogResult dialogResult = task.Result;
-                switch (dialogResult)
-                {
-                    case DialogResult.Yes:
-                        break;
-                    default:
-                        saving = false;
-                        PdmsPrint(AutoSaveCancelMessage);
+                    if (result == false)
+                    {
                         Logger.Info(AutoSaveCancelMessage);
-                        break;
+                    }
+                    
+
+                    /*
+                    CancellationTokenSource tokenSource = new CancellationTokenSource();
+                    Task<DialogResult> task = Task.Run(() =>
+                    {
+                        return MessageBox.Show(Text, Title, MessageBoxButtons.YesNo);
+                    }, tokenSource.Token);
+
+                    Thread.Sleep((int)_settings.CloseDelay.TotalMilliseconds);
+                    if (!task.IsCompleted)
+                    {
+                        
+                        
+                        
+                        IntPtr handle = AutoItX.WinGetHandle("Подтверждение");
+                        AutoItX.WinActivate(handle);
+                        AutoItX.Send("{Enter}");
+                        
+                        //tokenSource.Cancel();
+                    }
+
+                    DialogResult dialogResult = task.Result;
+                    switch (dialogResult)
+                    {
+                        case DialogResult.Yes:
+                            break;
+                        default:
+                            saving = false;
+                            PdmsPrint(AutoSaveCancelMessage);
+                            Logger.Info(AutoSaveCancelMessage);
+                            break;
+                    }
+                    */
                 }
 
                 if (saving)

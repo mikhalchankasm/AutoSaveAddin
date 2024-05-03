@@ -32,6 +32,23 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
+    <Target Name="CopyToAveva" AfterTargets="Build">
+        <Message Text="Executing CopyDLLs task" Importance="High" />
+        <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
+            <CopyToDir>c:\Program Files (x86)\AVEVA\Everything3D2.10\</CopyToDir>
+        </PropertyGroup>
+        <PropertyGroup Condition="'$(Configuration)' == 'Debug3' Or '$(Configuration)' == 'Release3'">
+            <CopyToDir>c:\Program Files (x86)\AVEVA\Everything3D3.1\</CopyToDir>
+        </PropertyGroup>
+        <PropertyGroup Condition="'$(Configuration)' == 'DebugD' Or '$(Configuration)' == 'ReleaseD'">
+            <CopyToDir>c:\Program Files (x86)\AVEVA\Everything3D3.1\</CopyToDir>
+        </PropertyGroup>
+        <ItemGroup>
+            <MySourceFiles Include="$(TargetPath)" />
+        </ItemGroup>
+        <Copy SourceFiles="@(MySourceFiles)" DestinationFolder="$(CopyToDir)" />
+        <Message Text="Copied build files to $(CopyToDir)" Importance="High" />
+    </Target>
     <ItemGroup>
         <Reference Include="AutoItX3.Assembly, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a646454c8d475470">
           <HintPath>..\packages\AutoItX.Dotnet.3.3.14.5\lib\AutoItX3.Assembly.dll</HintPath>
@@ -77,6 +94,10 @@
         <Compile Include="Lib\RelayCommand.cs" />
         <Compile Include="MainForm.xaml.cs" />
         <Compile Include="MainFormViewModel.cs" />
+        <Compile Include="MessageBoxT.xaml.cs">
+          <DependentUpon>MessageBoxT.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="MessageBoxViewModel.cs" />
         <Compile Include="Model\Settings.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
@@ -85,6 +106,7 @@
     </ItemGroup>
     <ItemGroup>
       <Page Include="MainForm.xaml" />
+      <Page Include="MessageBoxT.xaml" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <Import Project="..\packages\AutoItX.Dotnet.3.3.14.5\build\AutoItX.Dotnet.targets" Condition="Exists('..\packages\AutoItX.Dotnet.3.3.14.5\build\AutoItX.Dotnet.targets')" />
