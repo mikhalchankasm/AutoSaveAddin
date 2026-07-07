@@ -1,155 +1,185 @@
-﻿using System;
-using System.IO;
+using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Threading;
-using AutoIt;
 using AutoSaveAddin.Model;
+using Aveva.Core.Database;
 using Aveva.Core.Utilities.CommandLine;
-using Newtonsoft.Json;
-using NLog;
 
 namespace AutoSaveAddin
 {
     public static class AutoSaveServer
     {
-        private static ILogger Logger;
+        private static readonly object SyncRoot = new object();
         private static Dispatcher _mainThreadDispatcher;
 
         static AutoSaveServer()
         {
-            Logger = LogManager.GetCurrentClassLogger();
             _mainThreadDispatcher = Dispatcher.CurrentDispatcher;
         }
-        
-        private static bool _running;
 
         private static Settings _settings;
+        private static CancellationTokenSource _cancellation;
 
-        private static int _interval = (int)(0.3 * 60 * 1000);
-        private static int _time = 5 * 1000;
-        private const string Title = "Подтверждение";
-        private const string Text = "Сохранить работу. Вы уверены?";
-        private const string AutoSaveMessage = "Работа сохранена.";
-        private const string AutoSaveErrorMessage = "Автосохранение не удалось.";
-        private const string AutoSaveCancelMessage = "Автосохранение отменено.";
-        private const string AutoSaveServerStart = "Запуск сервера автосохранений.";
-        private const string AutoSaveServerStop = "Остановка сервера автосохранений.";
+        private const string AutoSaveMessage = "\u0420\u0430\u0431\u043e\u0442\u0430 \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0430.";
+        private const string AutoSaveErrorMessage = "\u0410\u0432\u0442\u043e\u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 \u043d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c.";
+        private const string AutoSaveCancelMessage = "\u0410\u0432\u0442\u043e\u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 \u043e\u0442\u043c\u0435\u043d\u0435\u043d\u043e.";
+        private const string AutoSaveServerStart = "AutoSave server started.";
+        private const string AutoSaveServerStop = "AutoSave server stopped.";
 
         private static Task ActiveTask;
 
         public static void Start()
         {
-            if (ActiveTask is null)
+            lock (SyncRoot)
             {
-                if (File.Exists(Environment.SettingPath))
-                {
-                    _settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Environment.SettingPath));
-                }
-                else
-                {
-                    _settings = Settings.GetDefault();
-                    File.WriteAllText(Environment.SettingPath, JsonConvert.SerializeObject(_settings));
-                }
+                if (ActiveTask != null && !ActiveTask.IsCompleted)
+                    return;
 
-                Logger.Debug(AutoSaveServerStart);
-                ActiveTask = Task.Factory.StartNew(Run);
+                _settings = SettingsStorage.Load();
+
+                _cancellation = new CancellationTokenSource();
+                Trace.WriteLine(AutoSaveServerStart);
+                ActiveTask = Task.Factory.StartNew(
+                    () => Run(_cancellation.Token),
+                    _cancellation.Token,
+                    TaskCreationOptions.LongRunning,
+                    TaskScheduler.Default);
             }
         }
 
-        private static void Run()
+        private static void Run(CancellationToken token)
         {
-            _running = true;
-            while (_running)
+            while (!token.IsCancellationRequested)
             {
-                Thread.Sleep((int)_settings.Delay.TotalMilliseconds);
-                if(!_settings.Enabled) continue;
-
-                bool saving = true;
-                if (_settings.IsNeedRequest)
+                try
                 {
-                    bool? result = _mainThreadDispatcher.Invoke(() =>
-                    {
-                        MessageBoxViewModel vm = new MessageBoxViewModel();
-                        vm.Time = (int)_settings.CloseDelay.TotalSeconds;
-                        MessageBoxT mb = new MessageBoxT
-                        {
-                            DataContext = vm
-                        };
-                        ElementHost.EnableModelessKeyboardInterop(mb);
-                        return mb.ShowDialog();
-                    });
+                    if (token.WaitHandle.WaitOne((int)_settings.Delay.TotalMilliseconds))
+                        break;
 
-                    saving = result.Value;
+                    if (!_settings.Enabled)
+                        continue;
 
-                    if (result == false)
+                    bool saving = true;
+                    if (_settings.IsNeedRequest)
                     {
-                        Logger.Info(AutoSaveCancelMessage);
-                    }
-                    
+                        bool? result = _mainThreadDispatcher.Invoke(new Func<bool?>(ShowSaveConfirmation));
+                        saving = result == true;
 
-                    /*
-                    CancellationTokenSource tokenSource = new CancellationTokenSource();
-                    Task<DialogResult> task = Task.Run(() =>
-                    {
-                        return MessageBox.Show(Text, Title, MessageBoxButtons.YesNo);
-                    }, tokenSource.Token);
-
-                    Thread.Sleep((int)_settings.CloseDelay.TotalMilliseconds);
-                    if (!task.IsCompleted)
-                    {
-                        
-                        
-                        
-                        IntPtr handle = AutoItX.WinGetHandle("Подтверждение");
-                        AutoItX.WinActivate(handle);
-                        AutoItX.Send("{Enter}");
-                        
-                        //tokenSource.Cancel();
+                        if (!saving)
+                            Trace.WriteLine(AutoSaveCancelMessage);
                     }
 
-                    DialogResult dialogResult = task.Result;
-                    switch (dialogResult)
-                    {
-                        case DialogResult.Yes:
-                            break;
-                        default:
-                            saving = false;
-                            PdmsPrint(AutoSaveCancelMessage);
-                            Logger.Info(AutoSaveCancelMessage);
-                            break;
-                    }
-                    */
+                    if (saving)
+                        _mainThreadDispatcher.Invoke(new Action(SaveWork));
                 }
-
-                if (saving)
+                catch (Exception ex)
                 {
-                    if (Aveva.Core.Database.MDB.CurrentMDB.SaveWork("Autosave"))
-                    {
-                        PdmsPrint(AutoSaveMessage);
-                        Logger.Info(AutoSaveMessage);
-                    }
-                    else
-                    {
-                        PdmsPrint(AutoSaveErrorMessage);
-                        Logger.Info(AutoSaveErrorMessage);
-                    }
+                    string message = AutoSaveErrorMessage + " " + ex.Message;
+                    PrintUserMessage(message);
                 }
             }
+        }
+
+        private static void SaveWork()
+        {
+            try
+            {
+                if (Aveva.Core.Database.MDB.CurrentMDB.SaveWork("Autosave"))
+                {
+                    PrintUserMessage(CreateAutoSaveCompletedMessage());
+
+                    if (_settings.UnclaimAfterSave)
+                    {
+                        PrintUserMessage("AutoSave: running UNCLAIM ALL");
+                        UnclaimAll();
+                    }
+                }
+                else
+                {
+                    PrintUserMessage(AutoSaveErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                string message = AutoSaveErrorMessage + " " + ex.Message;
+                PrintUserMessage(message);
+            }
+        }
+
+        private static string CreateAutoSaveCompletedMessage()
+        {
+            return "\u0412\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u043e \u0430\u0432\u0442\u043e\u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 " + DateTime.Now.ToString("HH:mm:ss");
+        }
+
+        private static bool? ShowSaveConfirmation()
+        {
+            MessageBoxViewModel vm = new MessageBoxViewModel();
+            vm.Time = (int)_settings.CloseDelay.TotalSeconds;
+
+            MessageBoxT mb = new MessageBoxT
+            {
+                DataContext = vm
+            };
+
+            ElementHost.EnableModelessKeyboardInterop(mb);
+            return mb.ShowDialog();
+        }
+
+        public static void PrintInfo(string text)
+        {
+            PrintUserMessage(text);
+        }
+
+        private static void UnclaimAll()
+        {
+            try
+            {
+                MDB.CurrentMDB.ReleaseAll();
+                PrintUserMessage("AutoSave: ReleaseAll completed");
+            }
+            catch (Exception ex)
+            {
+                string message = "AutoSave: ReleaseAll failed: " + ex.Message;
+                PrintUserMessage(message);
+            }
+        }
+
+        private static void PrintUserMessage(string text)
+        {
+            Console.WriteLine(text);
+            Trace.WriteLine(text);
+            PdmsPrint(text);
         }
 
         private static void PdmsPrint(string text)
         {
-            Command.CreateCommand($"q '{text}'").RunInPdms();
+            try
+            {
+                Command.CreateCommand(string.Format("$p {0}", text)).RunInPdms();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+            }
         }
 
         public static void Stop()
         {
-            _running = false;
-            ActiveTask = null;
-            Logger.Debug(AutoSaveServerStop);
+            lock (SyncRoot)
+            {
+                if (_cancellation != null)
+                {
+                    _cancellation.Cancel();
+                    _cancellation.Dispose();
+                    _cancellation = null;
+                }
+
+                ActiveTask = null;
+                Trace.WriteLine(AutoSaveServerStop);
+            }
         }
 
         public static void Restart()

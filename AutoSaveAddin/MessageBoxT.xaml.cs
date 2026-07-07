@@ -40,7 +40,13 @@ namespace AutoSaveAddin
         private ICommand _YesCommand;
 
         /// <summary>desc</summary>
-        public ICommand YesCommand => _YesCommand ?? (_YesCommand = new RelayCommand(OnYesCommandExecuted, CanYesCommandExecute));
+        public ICommand YesCommand
+        {
+            get
+            {
+                return _YesCommand ?? (_YesCommand = new RelayCommand(OnYesCommandExecuted, CanYesCommandExecute));
+            }
+        }
 
         private void OnYesCommandExecuted(object p)
         {
@@ -59,7 +65,13 @@ namespace AutoSaveAddin
         private ICommand _NoCommand;
 
         /// <summary>desc</summary>
-        public ICommand NoCommand => _NoCommand ?? (_NoCommand = new RelayCommand(OnNoCommandExecuted, CanNoCommandExecute));
+        public ICommand NoCommand
+        {
+            get
+            {
+                return _NoCommand ?? (_NoCommand = new RelayCommand(OnNoCommandExecuted, CanNoCommandExecute));
+            }
+        }
 
         private void OnNoCommandExecuted(object p)
         {

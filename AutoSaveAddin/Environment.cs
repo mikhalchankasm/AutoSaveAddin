@@ -1,5 +1,3 @@
-﻿using System.IO;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
@@ -11,26 +9,37 @@ namespace AutoSaveAddin
 {
     public class Environment
     {
-        public static string SettingPath => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Resources/AutoSaveAddin/settings.json");
+        public static string SettingPath
+        {
+            get { return SettingsStorage.SettingsPath; }
+        }
 
         public static Window MainForm { get; set; }
 
         public static Window CreateForm()
         {
             MainForm = new MainForm();
-            var avevaWindow = DependencyResolver.GetImplementationOf<IWindowManager>().MainForm;
-            SetOwner(avevaWindow, MainForm);
-            ElementHost.EnableModelessKeyboardInterop(MainForm);
 
+            IWindowManager windowManager = DependencyResolver.GetImplementationOf<IWindowManager>();
+            if (windowManager != null && windowManager.MainForm != null)
+                SetOwner(windowManager.MainForm, MainForm);
+
+            ElementHost.EnableModelessKeyboardInterop(MainForm);
             return MainForm;
         }
 
         public static void CloseForm()
         {
+            if (MainForm == null)
+                return;
+
             MainForm.Close();
             MainForm = null;
         }
-        
-        private static void SetOwner(Form ownerForm, Window window) => new WindowInteropHelper(window).Owner = ownerForm.Handle;
+
+        private static void SetOwner(Form ownerForm, Window window)
+        {
+            new WindowInteropHelper(window).Owner = ownerForm.Handle;
+        }
     }
 }

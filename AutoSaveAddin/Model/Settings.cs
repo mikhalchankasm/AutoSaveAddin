@@ -12,8 +12,8 @@ namespace AutoSaveAddin.Model
         /// <summary>Активно ли автосохранение</summary>
         public bool Enabled
         {
-            get => _Enabled;
-            set => SetProperty(ref _Enabled, value);
+            get { return _Enabled; }
+            set { SetProperty(ref _Enabled, value); }
         }
 
         #endregion
@@ -24,8 +24,20 @@ namespace AutoSaveAddin.Model
         /// <summary>Спрашивать ли перед сохранением</summary>
         public bool IsNeedRequest
         {
-            get => _IsNeedRequest;
-            set => SetProperty(ref _IsNeedRequest, value);
+            get { return _IsNeedRequest; }
+            set { SetProperty(ref _IsNeedRequest, value); }
+        }
+
+        #endregion
+        #region UnclaimAfterSave : bool - Выполнять unclaim all после сохранения
+
+        private bool _UnclaimAfterSave;
+
+        /// <summary>Выполнять unclaim all после сохранения</summary>
+        public bool UnclaimAfterSave
+        {
+            get { return _UnclaimAfterSave; }
+            set { SetProperty(ref _UnclaimAfterSave, value); }
         }
 
         #endregion
@@ -36,8 +48,8 @@ namespace AutoSaveAddin.Model
         /// <summary>Интервал между автосохранениями</summary>
         public TimeSpan Delay
         {
-            get => _Delay;
-            set => SetProperty(ref _Delay, value);
+            get { return _Delay; }
+            set { SetProperty(ref _Delay, value); }
         }
 
         #endregion
@@ -48,8 +60,8 @@ namespace AutoSaveAddin.Model
         /// <summary>Время ожидания ответа при запросе</summary>
         public TimeSpan CloseDelay
         {
-            get => _CloseDelay;
-            set => SetProperty(ref _CloseDelay, value);
+            get { return _CloseDelay; }
+            set { SetProperty(ref _CloseDelay, value); }
         }
 
         #endregion
@@ -60,6 +72,7 @@ namespace AutoSaveAddin.Model
             {
                 Enabled = true,
                 IsNeedRequest = false,
+                UnclaimAfterSave = false,
                 Delay = new TimeSpan(2, 0, 0),
                 CloseDelay = new TimeSpan(0 , 1, 0)
             };

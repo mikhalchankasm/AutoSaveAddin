@@ -1,4 +1,5 @@
-﻿using System.Windows;
+using System;
+using System.Windows;
 using Aveva.ApplicationFramework.Presentation;
 
 namespace AutoSaveAddin
@@ -12,13 +13,24 @@ namespace AutoSaveAddin
 
         public override void Execute()
         {
-            if (Environment.MainForm is null)
+            try
             {
-                Environment.CreateForm();
-                Environment.MainForm?.Show();
+                if (Environment.MainForm == null)
+                    Environment.CreateForm();
+
+                if (Environment.MainForm.IsVisible)
+                    Environment.MainForm.Hide();
+                else
+                    Environment.MainForm.Show();
             }
-            else
-                Environment.CloseForm();
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "AutoSaveAddin error:\r\n" + ex.Message,
+                    "AutoSaveAddin",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
     }
 }

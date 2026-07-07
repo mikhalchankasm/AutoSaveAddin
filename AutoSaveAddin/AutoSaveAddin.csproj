@@ -4,6 +4,7 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <CopyToAveva Condition=" '$(CopyToAveva)' == '' ">false</CopyToAveva>
         <ProjectGuid>{BC2CB06B-2754-4D8F-B399-16A83808B094}</ProjectGuid>
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -11,7 +12,7 @@
         <AssemblyName>AutoSaveAddin</AssemblyName>
         <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
-        <LangVersion>10</LangVersion>
+        <LangVersion>Default</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>x86</PlatformTarget>
@@ -32,15 +33,15 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
-    <Target Name="CopyToAveva" AfterTargets="Build">
+    <Target Name="CopyToAvevaTarget" AfterTargets="Build" Condition=" '$(CopyToAveva)' == 'true' ">
         <Message Text="Executing CopyDLLs task" Importance="High" />
-        <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
+        <PropertyGroup Condition=" '$(CopyToDir)' == '' And ('$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release') ">
             <CopyToDir>c:\Program Files (x86)\AVEVA\Everything3D2.10\</CopyToDir>
         </PropertyGroup>
-        <PropertyGroup Condition="'$(Configuration)' == 'Debug3' Or '$(Configuration)' == 'Release3'">
+        <PropertyGroup Condition=" '$(CopyToDir)' == '' And ('$(Configuration)' == 'Debug3' Or '$(Configuration)' == 'Release3') ">
             <CopyToDir>c:\Program Files (x86)\AVEVA\Everything3D3.1\</CopyToDir>
         </PropertyGroup>
-        <PropertyGroup Condition="'$(Configuration)' == 'DebugD' Or '$(Configuration)' == 'ReleaseD'">
+        <PropertyGroup Condition=" '$(CopyToDir)' == '' And ('$(Configuration)' == 'DebugD' Or '$(Configuration)' == 'ReleaseD') ">
             <CopyToDir>c:\Program Files (x86)\AVEVA\Everything3D3.1\</CopyToDir>
         </PropertyGroup>
         <ItemGroup>
@@ -50,10 +51,6 @@
         <Message Text="Copied build files to $(CopyToDir)" Importance="High" />
     </Target>
     <ItemGroup>
-        <Reference Include="AutoItX3.Assembly, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a646454c8d475470">
-          <HintPath>..\packages\AutoItX.Dotnet.3.3.14.5\lib\AutoItX3.Assembly.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
         <Reference Include="Aveva.ApplicationFramework, Version=1.2.2.0, Culture=neutral, PublicKeyToken=17c64733a9775004">
           <HintPath>C:\Program Files (x86)\AVEVA\Everything3D2.10\Aveva.ApplicationFramework.dll</HintPath>
         </Reference>
@@ -66,11 +63,8 @@
         <Reference Include="Aveva.Core.Utilities, Version=1.2.0.0, Culture=neutral, PublicKeyToken=17c64733a9775004">
           <HintPath>C:\Program Files (x86)\AVEVA\Everything3D2.10\Aveva.Core.Utilities.dll</HintPath>
         </Reference>
-        <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+        <Reference Include="Newtonsoft.Json">
           <HintPath>C:\Program Files (x86)\AVEVA\Everything3D2.10\Newtonsoft.Json.dll</HintPath>
-        </Reference>
-        <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
-          <HintPath>C:\Program Files (x86)\AVEVA\Everything3D2.10\NLog.dll</HintPath>
         </Reference>
         <Reference Include="PresentationCore" />
         <Reference Include="PresentationFramework" />
@@ -100,22 +94,13 @@
         <Compile Include="MessageBoxViewModel.cs" />
         <Compile Include="Model\Settings.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-    </ItemGroup>
-    <ItemGroup>
-      <None Include="packages.config" />
+        <Compile Include="SettingsStorage.cs" />
     </ItemGroup>
     <ItemGroup>
       <Page Include="MainForm.xaml" />
       <Page Include="MessageBoxT.xaml" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <Import Project="..\packages\AutoItX.Dotnet.3.3.14.5\build\AutoItX.Dotnet.targets" Condition="Exists('..\packages\AutoItX.Dotnet.3.3.14.5\build\AutoItX.Dotnet.targets')" />
-    <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-      <PropertyGroup>
-        <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
-      </PropertyGroup>
-      <Error Condition="!Exists('..\packages\AutoItX.Dotnet.3.3.14.5\build\AutoItX.Dotnet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AutoItX.Dotnet.3.3.14.5\build\AutoItX.Dotnet.targets'))" />
-    </Target>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">
