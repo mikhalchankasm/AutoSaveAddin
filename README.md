@@ -4,7 +4,14 @@ Small AVEVA E3D addin for timed `SaveWork`.
 
 ## Install
 
-Download the latest release zip from GitHub Releases, then copy `AutoSaveAddin.dll` into the E3D addin load location used by your site.
+Download the latest release zip from GitHub Releases.
+
+Copy the matching `AutoSaveAddin.dll` to the addin folder that your E3D environment loads on startup. This is usually a site or user addin location configured by the administrator, not necessarily `Program Files`.
+
+Use:
+
+- `E3D-2.10/AutoSaveAddin.dll` for AVEVA E3D 2.10
+- `E3D-3.1/AutoSaveAddin.dll` for AVEVA E3D 3.1
 
 ## Build
 
@@ -15,10 +22,11 @@ Configurations:
 - `Release`: AVEVA E3D 2.10
 - `Release3`: AVEVA E3D 3.1
 
-Default AVEVA references point to:
+The project uses installed AVEVA DLLs as build references. Default reference roots:
 
 ```text
 C:\Program Files (x86)\AVEVA\Everything3D2.10\
+C:\Program Files (x86)\AVEVA\Everything3D3.1\
 ```
 
 Optional build copy:
