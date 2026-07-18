@@ -14,20 +14,6 @@
         Background="#F7FAF8"
         Loaded="Window_OnLoaded"
         FocusManager.FocusedElement="{Binding ElementName=YesButton}">
-    <Window.Resources>
-        <Style x:Key="HelpIcon" TargetType="TextBlock">
-            <Setter Property="Width" Value="18" />
-            <Setter Property="Height" Value="18" />
-            <Setter Property="Margin" Value="6,0,0,0" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Foreground" Value="#49645C" />
-            <Setter Property="Background" Value="#EDF3F1" />
-            <Setter Property="ToolTipService.ShowDuration" Value="30000" />
-        </Style>
-    </Window.Resources>
     <Border Margin="12" Padding="16" Background="#FFFFFF" BorderBrush="#D7E2DE" BorderThickness="1" CornerRadius="6">
         <Grid>
             <Grid.RowDefinitions>
@@ -46,29 +32,26 @@
             </StackPanel>
 
             <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Stretch">
-                <Button Name="YesButton" Height="34" Width="185" Command="{Binding YesCommand, ElementName=uc}" Background="#DFF2E6" BorderBrush="#8CC8A0" Foreground="#205B34" FontWeight="SemiBold">
+                <Button Name="YesButton" Height="34" Width="185" Command="{Binding YesCommand, ElementName=uc}" Background="#DFF2E6" BorderBrush="#8CC8A0" Foreground="#205B34" FontWeight="SemiBold" ToolTipService.ShowDuration="30000">
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <TextBlock FontSize="14" MaxWidth="360" TextWrapping="Wrap" Text="{x:Static loc:UiText.ConfirmSaveHelp}" />
+                        </ToolTip>
+                    </Button.ToolTip>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="{Binding YesText}" />
                         <TextBlock Text="{Binding Time, StringFormat=  ({0})}" />
                     </StackPanel>
                 </Button>
-                <TextBlock Style="{StaticResource HelpIcon}" Text="?">
-                    <TextBlock.ToolTip>
-                        <ToolTip>
-                            <TextBlock FontSize="14" MaxWidth="360" TextWrapping="Wrap" Text="{x:Static loc:UiText.ConfirmSaveHelp}" />
-                        </ToolTip>
-                    </TextBlock.ToolTip>
-                </TextBlock>
             </StackPanel>
             <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Stretch">
-                <Button Name="NoButton" Height="34" Width="185" Content="{Binding NoText}" Command="{Binding NoCommand, ElementName=uc}" Background="#F7E1E1" BorderBrush="#D69A9A" Foreground="#7A2D2D" FontWeight="SemiBold" />
-                <TextBlock Style="{StaticResource HelpIcon}" Text="?">
-                    <TextBlock.ToolTip>
+                <Button Name="NoButton" Height="34" Width="185" Content="{Binding NoText}" Command="{Binding NoCommand, ElementName=uc}" Background="#F7E1E1" BorderBrush="#D69A9A" Foreground="#7A2D2D" FontWeight="SemiBold" ToolTipService.ShowDuration="30000">
+                    <Button.ToolTip>
                         <ToolTip>
                             <TextBlock FontSize="14" MaxWidth="360" TextWrapping="Wrap" Text="{x:Static loc:UiText.CancelSaveHelp}" />
                         </ToolTip>
-                    </TextBlock.ToolTip>
-                </TextBlock>
+                    </Button.ToolTip>
+                </Button>
             </StackPanel>
         </Grid>
     </Border>
