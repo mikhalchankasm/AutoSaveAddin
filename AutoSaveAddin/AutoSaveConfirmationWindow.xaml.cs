@@ -6,9 +6,9 @@ using AutoSaveAddin.Lib;
 
 namespace AutoSaveAddin
 {
-    public partial class MessageBoxT : Window
+    public partial class AutoSaveConfirmationWindow : Window
     {
-        public MessageBoxT()
+        public AutoSaveConfirmationWindow()
         {
             InitializeComponent();
             _timer = new DispatcherTimer();
@@ -35,16 +35,13 @@ namespace AutoSaveAddin
             TimerStop();
         }
 
-        #region YesCommand : ICommand - desc
+        private ICommand _yesCommand;
 
-        private ICommand _YesCommand;
-
-        /// <summary>desc</summary>
         public ICommand YesCommand
         {
             get
             {
-                return _YesCommand ?? (_YesCommand = new RelayCommand(OnYesCommandExecuted, CanYesCommandExecute));
+                return _yesCommand ?? (_yesCommand = new RelayCommand(OnYesCommandExecuted));
             }
         }
 
@@ -53,23 +50,13 @@ namespace AutoSaveAddin
             Close(true);
         }
 
-        private bool CanYesCommandExecute(object p)
-        {
-            return true;
-        }
+        private ICommand _noCommand;
 
-        #endregion
-
-        #region NoCommand : ICommand - desc
-
-        private ICommand _NoCommand;
-
-        /// <summary>desc</summary>
         public ICommand NoCommand
         {
             get
             {
-                return _NoCommand ?? (_NoCommand = new RelayCommand(OnNoCommandExecuted, CanNoCommandExecute));
+                return _noCommand ?? (_noCommand = new RelayCommand(OnNoCommandExecuted));
             }
         }
 
@@ -78,21 +65,17 @@ namespace AutoSaveAddin
             Close(false);
         }
 
-        private bool CanNoCommandExecute(object p)
-        {
-            return true;
-        }
-
-        #endregion
-
-        private void MessageBoxT_OnLoaded(object sender, RoutedEventArgs e)
+        private void Window_OnLoaded(object sender, RoutedEventArgs e)
         {
             TimerStart();
         }
         
         private void TimerTick(object sender, EventArgs e)
         {
-            MessageBoxViewModel vm = DataContext as MessageBoxViewModel;
+            AutoSaveConfirmationViewModel vm = DataContext as AutoSaveConfirmationViewModel;
+            if (vm == null)
+                return;
+
             vm.Time--;
             
             if (vm.Time <= 0)

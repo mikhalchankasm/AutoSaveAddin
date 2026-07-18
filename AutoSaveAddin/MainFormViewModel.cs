@@ -11,20 +11,20 @@ namespace AutoSaveAddin
 {
     public class MainFormViewModel : NotifyBase
     {
-        private Settings _Settings;
+        private Settings _settings;
         private Settings _lastSavedSettings;
-        private string _StatusText;
+        private string _statusText;
 
         public Settings Settings
         {
-            get { return _Settings; }
-            set { SetProperty(ref _Settings, value); }
+            get { return _settings; }
+            set { SetProperty(ref _settings, value); }
         }
 
         public string StatusText
         {
-            get { return _StatusText; }
-            set { SetProperty(ref _StatusText, value); }
+            get { return _statusText; }
+            set { SetProperty(ref _statusText, value); }
         }
 
         public MainFormViewModel()
@@ -34,19 +34,19 @@ namespace AutoSaveAddin
             StatusText = string.Empty;
         }
 
-        private ICommand _SaveCommand;
-        private ICommand _IncreaseDelayCommand;
-        private ICommand _DecreaseDelayCommand;
-        private ICommand _IncreaseCloseDelayCommand;
-        private ICommand _DecreaseCloseDelayCommand;
-        private ICommand _OpenSettingsFileCommand;
-        private ICommand _NormalizeSettingsFileCommand;
+        private ICommand _saveCommand;
+        private ICommand _increaseDelayCommand;
+        private ICommand _decreaseDelayCommand;
+        private ICommand _increaseCloseDelayCommand;
+        private ICommand _decreaseCloseDelayCommand;
+        private ICommand _openSettingsFileCommand;
+        private ICommand _normalizeSettingsFileCommand;
 
         public ICommand SaveCommand
         {
             get
             {
-                return _SaveCommand ?? (_SaveCommand = new RelayCommand(OnSaveCommandExecuted));
+                return _saveCommand ?? (_saveCommand = new RelayCommand(OnSaveCommandExecuted));
             }
         }
 
@@ -54,7 +54,7 @@ namespace AutoSaveAddin
         {
             get
             {
-                return _IncreaseDelayCommand ?? (_IncreaseDelayCommand = new RelayCommand(delegate { ChangeDelay(1); }));
+                return _increaseDelayCommand ?? (_increaseDelayCommand = new RelayCommand(delegate { ChangeDelay(1); }));
             }
         }
 
@@ -62,7 +62,7 @@ namespace AutoSaveAddin
         {
             get
             {
-                return _DecreaseDelayCommand ?? (_DecreaseDelayCommand = new RelayCommand(delegate { ChangeDelay(-1); }));
+                return _decreaseDelayCommand ?? (_decreaseDelayCommand = new RelayCommand(delegate { ChangeDelay(-1); }));
             }
         }
 
@@ -70,7 +70,7 @@ namespace AutoSaveAddin
         {
             get
             {
-                return _IncreaseCloseDelayCommand ?? (_IncreaseCloseDelayCommand = new RelayCommand(delegate { ChangeCloseDelay(5); }));
+                return _increaseCloseDelayCommand ?? (_increaseCloseDelayCommand = new RelayCommand(delegate { ChangeCloseDelay(5); }));
             }
         }
 
@@ -78,7 +78,7 @@ namespace AutoSaveAddin
         {
             get
             {
-                return _DecreaseCloseDelayCommand ?? (_DecreaseCloseDelayCommand = new RelayCommand(delegate { ChangeCloseDelay(-5); }));
+                return _decreaseCloseDelayCommand ?? (_decreaseCloseDelayCommand = new RelayCommand(delegate { ChangeCloseDelay(-5); }));
             }
         }
 
@@ -86,7 +86,7 @@ namespace AutoSaveAddin
         {
             get
             {
-                return _OpenSettingsFileCommand ?? (_OpenSettingsFileCommand = new RelayCommand(OnOpenSettingsFileCommandExecuted));
+                return _openSettingsFileCommand ?? (_openSettingsFileCommand = new RelayCommand(OnOpenSettingsFileCommandExecuted));
             }
         }
 
@@ -94,7 +94,7 @@ namespace AutoSaveAddin
         {
             get
             {
-                return _NormalizeSettingsFileCommand ?? (_NormalizeSettingsFileCommand = new RelayCommand(OnNormalizeSettingsFileCommandExecuted));
+                return _normalizeSettingsFileCommand ?? (_normalizeSettingsFileCommand = new RelayCommand(OnNormalizeSettingsFileCommandExecuted));
             }
         }
 
@@ -116,7 +116,7 @@ namespace AutoSaveAddin
 
         private static void ShowSavedMessage(string message)
         {
-            Window owner = Environment.MainForm;
+            Window owner = AddinUiContext.MainForm;
             if (owner != null)
             {
                 MessageBox.Show(

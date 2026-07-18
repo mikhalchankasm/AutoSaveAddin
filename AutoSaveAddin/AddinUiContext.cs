@@ -7,13 +7,8 @@ using Aveva.ApplicationFramework.Presentation;
 
 namespace AutoSaveAddin
 {
-    public class Environment
+    public static class AddinUiContext
     {
-        public static string SettingPath
-        {
-            get { return SettingsStorage.SettingsPath; }
-        }
-
         public static Window MainForm { get; set; }
 
         public static Window CreateForm()

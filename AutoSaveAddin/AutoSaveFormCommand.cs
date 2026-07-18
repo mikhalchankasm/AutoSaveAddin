@@ -15,13 +15,13 @@ namespace AutoSaveAddin
         {
             try
             {
-                if (Environment.MainForm == null)
-                    Environment.CreateForm();
+                if (AddinUiContext.MainForm == null)
+                    AddinUiContext.CreateForm();
 
-                if (Environment.MainForm.IsVisible)
-                    Environment.MainForm.Hide();
+                if (AddinUiContext.MainForm.IsVisible)
+                    AddinUiContext.MainForm.Hide();
                 else
-                    Environment.MainForm.Show();
+                    AddinUiContext.MainForm.Show();
             }
             catch (Exception ex)
             {

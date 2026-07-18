@@ -27,20 +27,20 @@ namespace AutoSaveAddin
         private const string AutoSaveServerStart = "AutoSave server started.";
         private const string AutoSaveServerStop = "AutoSave server stopped.";
 
-        private static Task ActiveTask;
+        private static Task _activeTask;
 
         public static void Start()
         {
             lock (SyncRoot)
             {
-                if (ActiveTask != null && !ActiveTask.IsCompleted)
+                if (_activeTask != null && !_activeTask.IsCompleted)
                     return;
 
                 _settings = SettingsStorage.Load();
 
                 _cancellation = new CancellationTokenSource();
                 Trace.WriteLine(AutoSaveServerStart);
-                ActiveTask = Task.Factory.StartNew(
+                _activeTask = Task.Factory.StartNew(
                     () => Run(_cancellation.Token),
                     _cancellation.Token,
                     TaskCreationOptions.LongRunning,
@@ -118,7 +118,7 @@ namespace AutoSaveAddin
 
         private static bool? ShowSaveConfirmation()
         {
-            MessageBoxViewModel vm = new MessageBoxViewModel();
+            AutoSaveConfirmationViewModel vm = new AutoSaveConfirmationViewModel();
             vm.Time = (int)_settings.CloseDelay.TotalSeconds;
             vm.TimeoutResult = !_settings.RequireConfirmationToSave;
 
@@ -131,18 +131,13 @@ namespace AutoSaveAddin
                 vm.Details = UiText.AutoConfirmationDetails;
             }
 
-            MessageBoxT mb = new MessageBoxT
+            AutoSaveConfirmationWindow mb = new AutoSaveConfirmationWindow
             {
                 DataContext = vm
             };
 
             ElementHost.EnableModelessKeyboardInterop(mb);
             return mb.ShowDialog();
-        }
-
-        public static void PrintInfo(string text)
-        {
-            PrintUserMessage(text);
         }
 
         private static void UnclaimAll()
@@ -189,7 +184,7 @@ namespace AutoSaveAddin
                     _cancellation = null;
                 }
 
-                ActiveTask = null;
+                _activeTask = null;
                 Trace.WriteLine(AutoSaveServerStop);
             }
         }
