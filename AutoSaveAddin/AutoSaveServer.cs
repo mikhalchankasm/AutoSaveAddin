@@ -63,7 +63,9 @@ namespace AutoSaveAddin
                     bool saving = true;
                     if (_settings.IsNeedRequest)
                     {
-                        bool? result = _mainThreadDispatcher.Invoke(new Func<bool?>(ShowSaveConfirmation));
+                        bool? result = (bool?)_mainThreadDispatcher.Invoke(
+                            new Func<bool?>(ShowSaveConfirmation),
+                            DispatcherPriority.ApplicationIdle);
                         saving = result == true;
 
                         if (!saving)
@@ -71,7 +73,9 @@ namespace AutoSaveAddin
                     }
 
                     if (saving)
-                        _mainThreadDispatcher.Invoke(new Action(SaveWork));
+                        _mainThreadDispatcher.Invoke(
+                            new Action(SaveWork),
+                            DispatcherPriority.ApplicationIdle);
                 }
                 catch (Exception ex)
                 {
