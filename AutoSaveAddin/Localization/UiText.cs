@@ -1,4 +1,6 @@
+using System;
 using System.Globalization;
+using System.Reflection;
 
 namespace AutoSaveAddin.Localization
 {
@@ -14,7 +16,16 @@ namespace AutoSaveAddin.Localization
             return IsRussian ? ru : en;
         }
 
-        public static string SettingsWindowTitle { get { return T("\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430 \u0430\u0432\u0442\u043e\u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u044f", "Autosave settings"); } }
+        private static string VersionText
+        {
+            get
+            {
+                Version version = Assembly.GetExecutingAssembly().GetName().Version;
+                return string.Format("v{0}.{1}.{2}", version.Major, version.Minor, version.Build);
+            }
+        }
+
+        public static string SettingsWindowTitle { get { return string.Format("{0} {1}", T("\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430 \u0430\u0432\u0442\u043e\u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u044f", "Autosave settings"), VersionText); } }
         public static string SettingsHeader { get { return T("\u0410\u0432\u0442\u043e\u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435", "Autosave"); } }
         public static string SettingsSubtitle { get { return T("\u0418\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u043f\u0440\u0438\u043c\u0435\u043d\u044f\u044e\u0442\u0441\u044f \u0442\u043e\u043b\u044c\u043a\u043e \u043f\u043e\u0441\u043b\u0435 \u00ab\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438\u00bb", "Changes are applied only after clicking Save settings"); } }
         public static string EnabledBannerTitle { get { return T("\u0410\u0432\u0442\u043e\u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u043e", "Autosave is enabled"); } }
