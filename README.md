@@ -6,12 +6,25 @@ Small AVEVA E3D addin for timed `SaveWork`.
 
 Download the latest release zip from GitHub Releases.
 
-Copy the matching `AutoSaveAddin.dll` to the addin folder that your E3D environment loads on startup. This is usually a site or user addin location configured by the administrator, not necessarily `Program Files`.
+Copy the matching `AutoSaveAddin.dll` to a folder listed in `CAF_ADDINS_PATH`. This is usually a site or user addin location configured by the administrator, not necessarily `Program Files`.
 
 Use:
 
 - `E3D-2.10/AutoSaveAddin.dll` for AVEVA E3D 2.10
 - `E3D-3.1/AutoSaveAddin.dll` for AVEVA E3D 3.1
+
+Register the addin name in the module addins XML, for example `DesignAddins.xml`:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfString
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <string>AutoSaveAddin</string>
+</ArrayOfString>
+```
+
+`CAF_UIC_PATH` is only needed if your site also loads separate CAF UI customization files.
 
 ## Build
 
