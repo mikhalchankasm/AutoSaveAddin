@@ -5,6 +5,8 @@
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
         <CopyToAveva Condition=" '$(CopyToAveva)' == '' ">false</CopyToAveva>
+        <AvevaRoot Condition=" '$(AvevaRoot)' == '' And ('$(Configuration)' == 'Debug3' Or '$(Configuration)' == 'Release3') ">C:\Program Files (x86)\AVEVA\Everything3D3.1\</AvevaRoot>
+        <AvevaRoot Condition=" '$(AvevaRoot)' == '' ">C:\Program Files (x86)\AVEVA\Everything3D2.10\</AvevaRoot>
         <ProjectGuid>{BC2CB06B-2754-4D8F-B399-16A83808B094}</ProjectGuid>
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -33,6 +35,25 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug3|AnyCPU' ">
+        <PlatformTarget>x86</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug3\</OutputPath>
+        <DefineConstants>DEBUG;TRACE;E3D31</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release3|AnyCPU' ">
+        <PlatformTarget>x86</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release3\</OutputPath>
+        <DefineConstants>TRACE;E3D31</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
     <Target Name="CopyToAvevaTarget" AfterTargets="Build" Condition=" '$(CopyToAveva)' == 'true' ">
         <Message Text="Executing CopyDLLs task" Importance="High" />
         <PropertyGroup Condition=" '$(CopyToDir)' == '' And ('$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release') ">
@@ -51,20 +72,23 @@
         <Message Text="Copied build files to $(CopyToDir)" Importance="High" />
     </Target>
     <ItemGroup>
-        <Reference Include="Aveva.ApplicationFramework, Version=1.2.2.0, Culture=neutral, PublicKeyToken=17c64733a9775004">
-          <HintPath>C:\Program Files (x86)\AVEVA\Everything3D2.10\Aveva.ApplicationFramework.dll</HintPath>
+        <Reference Include="Aveva.ApplicationFramework">
+          <HintPath>$(AvevaRoot)Aveva.ApplicationFramework.dll</HintPath>
         </Reference>
-        <Reference Include="Aveva.ApplicationFramework.Presentation, Version=1.2.2.0, Culture=neutral, PublicKeyToken=17c64733a9775004">
-          <HintPath>C:\Program Files (x86)\AVEVA\Everything3D2.10\Aveva.ApplicationFramework.Presentation.dll</HintPath>
+        <Reference Include="Aveva.ApplicationFramework.Presentation">
+          <HintPath>$(AvevaRoot)Aveva.ApplicationFramework.Presentation.dll</HintPath>
         </Reference>
-        <Reference Include="Aveva.Core.Database, Version=1.2.0.0, Culture=neutral, PublicKeyToken=17c64733a9775004">
-          <HintPath>C:\Program Files (x86)\AVEVA\Everything3D2.10\Aveva.Core.Database.dll</HintPath>
+        <Reference Include="Aveva.Core.Database">
+          <HintPath>$(AvevaRoot)Aveva.Core.Database.dll</HintPath>
         </Reference>
-        <Reference Include="Aveva.Core.Utilities, Version=1.2.0.0, Culture=neutral, PublicKeyToken=17c64733a9775004">
-          <HintPath>C:\Program Files (x86)\AVEVA\Everything3D2.10\Aveva.Core.Utilities.dll</HintPath>
+        <Reference Include="Aveva.Core.Utilities">
+          <HintPath>$(AvevaRoot)Aveva.Core.Utilities.dll</HintPath>
         </Reference>
         <Reference Include="Newtonsoft.Json">
-          <HintPath>C:\Program Files (x86)\AVEVA\Everything3D2.10\Newtonsoft.Json.dll</HintPath>
+          <HintPath>$(AvevaRoot)Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="PMLNet">
+          <HintPath>$(AvevaRoot)PMLNet.dll</HintPath>
         </Reference>
         <Reference Include="PresentationCore" />
         <Reference Include="PresentationFramework" />

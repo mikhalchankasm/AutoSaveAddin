@@ -10,6 +10,11 @@ Download the latest release zip from GitHub Releases, then copy `AutoSaveAddin.d
 
 Build `AutoSaveAddin.sln` for .NET Framework 4.8, x86.
 
+Configurations:
+
+- `Release`: AVEVA E3D 2.10
+- `Release3`: AVEVA E3D 3.1
+
 Default AVEVA references point to:
 
 ```text
@@ -20,6 +25,7 @@ Optional build copy:
 
 ```powershell
 MSBuild AutoSaveAddin.sln /p:Configuration=Release /p:CopyToAveva=true
+MSBuild AutoSaveAddin.sln /p:Configuration=Release3 /p:CopyToAveva=true
 ```
 
 ## Use
