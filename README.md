@@ -49,6 +49,15 @@ MSBuild AutoSaveAddin.sln /p:Configuration=Release /p:CopyToAveva=true
 MSBuild AutoSaveAddin.sln /p:Configuration=Release3 /p:CopyToAveva=true
 ```
 
+Optional user CAF install:
+
+```powershell
+.\tools\Install-UserCaf.ps1 -E3DVersion 2.10
+.\tools\Install-UserCaf.ps1 -E3DVersion 3.1
+```
+
+Run one version at a time. The script makes the selected E3D version active in `CAF_ADDINS_PATH`.
+
 ## Use
 
 Command key:
