@@ -4,15 +4,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:converters="clr-namespace:AutoSaveAddin.Converters"
+        xmlns:loc="clr-namespace:AutoSaveAddin.Localization"
         mc:Ignorable="d"
-        Height="380"
-        Width="540"
+        Height="470"
+        Width="760"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Background="#F4F7F6"
         Closing="Window_Closing"
         Loaded="Window_Loaded"
-        Title="&#x041d;&#x0430;&#x0441;&#x0442;&#x0440;&#x043e;&#x0439;&#x043a;&#x0430; &#x0430;&#x0432;&#x0442;&#x043e;&#x0441;&#x043e;&#x0445;&#x0440;&#x0430;&#x043d;&#x0435;&#x043d;&#x0438;&#x044f;">
+        Title="{x:Static loc:UiText.SettingsWindowTitle}">
     <Window.Resources>
         <converters:TimeSpanToMinConverter x:Key="TimeSpanToMinConverter" />
         <converters:TimeSpanToSecConverter x:Key="TimeSpanToSecConverter" />
@@ -44,6 +45,19 @@
             <Setter Property="Foreground" Value="#31423D" />
         </Style>
 
+        <Style x:Key="HelpIcon" TargetType="TextBlock">
+            <Setter Property="Width" Value="18" />
+            <Setter Property="Height" Value="18" />
+            <Setter Property="Margin" Value="4,0,0,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#49645C" />
+            <Setter Property="Background" Value="#EDF3F1" />
+            <Setter Property="ToolTipService.ShowDuration" Value="30000" />
+        </Style>
+
         <Style x:Key="ValueBox" TargetType="TextBox">
             <Setter Property="Width" Value="58" />
             <Setter Property="Height" Value="26" />
@@ -63,52 +77,107 @@
                 <RowDefinition Height="36" />
                 <RowDefinition Height="36" />
                 <RowDefinition Height="36" />
+                <RowDefinition Height="36" />
                 <RowDefinition Height="42" />
                 <RowDefinition Height="42" />
                 <RowDefinition Height="12" />
                 <RowDefinition Height="0" />
-                <RowDefinition Height="40" />
+                <RowDefinition Height="58" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="165" />
+                <ColumnDefinition Width="295" />
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Row="0" Grid.Column="0">
-                <TextBlock Text="&#x0410;&#x0432;&#x0442;&#x043e;&#x0441;&#x043e;&#x0445;&#x0440;&#x0430;&#x043d;&#x0435;&#x043d;&#x0438;&#x0435;" FontSize="18" FontWeight="SemiBold" Foreground="#1F2F2B" />
-                <TextBlock Text="&#x0418;&#x0437;&#x043c;&#x0435;&#x043d;&#x0435;&#x043d;&#x0438;&#x044f; &#x0432;&#x0441;&#x0442;&#x0443;&#x043f;&#x044f;&#x0442; &#x0432; &#x0441;&#x0438;&#x043b;&#x0443; &#x0442;&#x043e;&#x043b;&#x044c;&#x043a;&#x043e; &#x043f;&#x043e;&#x0441;&#x043b;&#x0435; &#x043d;&#x0430;&#x0436;&#x0430;&#x0442;&#x0438;&#x044f; &#x00ab;&#x0421;&#x043e;&#x0445;&#x0440;&#x0430;&#x043d;&#x0438;&#x0442;&#x044c;&#x00bb;" Margin="0,4,0,0" Foreground="#60736D" />
+                <TextBlock Text="{x:Static loc:UiText.SettingsHeader}" FontSize="18" FontWeight="SemiBold" Foreground="#1F2F2B" />
+                <TextBlock Text="{x:Static loc:UiText.SettingsSubtitle}" Margin="0,4,12,0" Foreground="#60736D" TextWrapping="Wrap" />
             </StackPanel>
 
             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                <Button Style="{StaticResource SecondaryButton}" Content="&#x2197;" ToolTip="&#x041e;&#x0442;&#x043a;&#x0440;&#x044b;&#x0442;&#x044c; JSON" Command="{Binding OpenSettingsFileCommand}" />
-                <Button Style="{StaticResource SecondaryButton}" Content="&#x2713;" ToolTip="&#x041f;&#x0440;&#x043e;&#x0432;&#x0435;&#x0440;&#x0438;&#x0442;&#x044c; JSON" Command="{Binding NormalizeSettingsFileCommand}" />
+                <Button Style="{StaticResource SecondaryButton}" Content="&#x2197;" ToolTip="{x:Static loc:UiText.OpenJsonButtonTooltip}" Command="{Binding OpenSettingsFileCommand}" />
+                <TextBlock Style="{StaticResource HelpIcon}" Text="?">
+                    <TextBlock.ToolTip>
+                        <ToolTip>
+                            <TextBlock FontSize="14" MaxWidth="340" TextWrapping="Wrap" Text="{x:Static loc:UiText.OpenJsonHelp}" />
+                        </ToolTip>
+                    </TextBlock.ToolTip>
+                </TextBlock>
+                <Button Style="{StaticResource SecondaryButton}" Content="&#x2713;" ToolTip="{x:Static loc:UiText.CheckJsonButtonTooltip}" Command="{Binding NormalizeSettingsFileCommand}" />
+                <TextBlock Style="{StaticResource HelpIcon}" Text="?">
+                    <TextBlock.ToolTip>
+                        <ToolTip>
+                            <TextBlock FontSize="14" MaxWidth="340" TextWrapping="Wrap" Text="{x:Static loc:UiText.CheckJsonHelp}" />
+                        </ToolTip>
+                    </TextBlock.ToolTip>
+                </TextBlock>
             </StackPanel>
 
-            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="&#x0424;&#x0443;&#x043d;&#x043a;&#x0446;&#x0438;&#x044f; &#x0430;&#x0432;&#x0442;&#x043e;&#x0441;&#x043e;&#x0445;&#x0440;&#x0430;&#x043d;&#x0435;&#x043d;&#x0438;&#x044f;" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelText}" Text="{x:Static loc:UiText.EnabledLabel}" />
             <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Settings.Enabled}" />
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="&#x0417;&#x0430;&#x043f;&#x0440;&#x043e;&#x0441; &#x043f;&#x0435;&#x0440;&#x0435;&#x0434; &#x0441;&#x043e;&#x0445;&#x0440;&#x0430;&#x043d;&#x0435;&#x043d;&#x0438;&#x0435;&#x043c;" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelText}" Text="{x:Static loc:UiText.AskBeforeSaveLabel}" />
             <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Settings.IsNeedRequest}" />
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="&#x0412;&#x044b;&#x043f;&#x043e;&#x043b;&#x043d;&#x0438;&#x0442;&#x044c; unclaim all &#x043f;&#x043e;&#x0441;&#x043b;&#x0435; &#x0441;&#x043e;&#x0445;&#x0440;&#x0430;&#x043d;&#x0435;&#x043d;&#x0438;&#x044f;" />
-            <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Settings.UnclaimAfterSave}" />
+            <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelText}" Text="{x:Static loc:UiText.StrictConfirmationLabel}" />
+            <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Settings.RequireConfirmationToSave}" />
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource LabelText}" Text="&#x0418;&#x043d;&#x0442;&#x0435;&#x0440;&#x0432;&#x0430;&#x043b; &#x043c;&#x0435;&#x0436;&#x0434;&#x0443; &#x0441;&#x043e;&#x0445;&#x0440;&#x0430;&#x043d;&#x0435;&#x043d;&#x0438;&#x044f;&#x043c;&#x0438;, &#x043c;&#x0438;&#x043d;" />
-            <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+            <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource LabelText}" Text="{x:Static loc:UiText.UnclaimAfterSaveLabel}" />
+            <CheckBox Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding Settings.UnclaimAfterSave}" />
+
+            <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelText}" Text="{x:Static loc:UiText.SaveIntervalLabel}" />
+            <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                 <Button Style="{StaticResource SmallButton}" Content="-" Command="{Binding DecreaseDelayCommand}" />
+                <TextBlock Style="{StaticResource HelpIcon}" Text="?">
+                    <TextBlock.ToolTip>
+                        <ToolTip>
+                            <TextBlock FontSize="14" MaxWidth="320" TextWrapping="Wrap" Text="{x:Static loc:UiText.DecreaseIntervalHelp}" />
+                        </ToolTip>
+                    </TextBlock.ToolTip>
+                </TextBlock>
                 <TextBox Style="{StaticResource ValueBox}" Text="{Binding Settings.Delay, Converter={StaticResource TimeSpanToMinConverter}, UpdateSourceTrigger=PropertyChanged}" />
                 <Button Style="{StaticResource SmallButton}" Content="+" Command="{Binding IncreaseDelayCommand}" />
+                <TextBlock Style="{StaticResource HelpIcon}" Text="?">
+                    <TextBlock.ToolTip>
+                        <ToolTip>
+                            <TextBlock FontSize="14" MaxWidth="320" TextWrapping="Wrap" Text="{x:Static loc:UiText.IncreaseIntervalHelp}" />
+                        </ToolTip>
+                    </TextBlock.ToolTip>
+                </TextBlock>
             </StackPanel>
 
-            <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelText}" Text="&#x041e;&#x0436;&#x0438;&#x0434;&#x0430;&#x043d;&#x0438;&#x0435; &#x043e;&#x0442;&#x0432;&#x0435;&#x0442;&#x0430; &#x043f;&#x0440;&#x0438; &#x0437;&#x0430;&#x043f;&#x0440;&#x043e;&#x0441;&#x0435;, &#x0441;&#x0435;&#x043a;" />
-            <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+            <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource LabelText}" Text="{x:Static loc:UiText.ResponseTimeoutLabel}" />
+            <StackPanel Grid.Row="7" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                 <Button Style="{StaticResource SmallButton}" Content="-" Command="{Binding DecreaseCloseDelayCommand}" />
+                <TextBlock Style="{StaticResource HelpIcon}" Text="?">
+                    <TextBlock.ToolTip>
+                        <ToolTip>
+                            <TextBlock FontSize="14" MaxWidth="320" TextWrapping="Wrap" Text="{x:Static loc:UiText.DecreaseTimeoutHelp}" />
+                        </ToolTip>
+                    </TextBlock.ToolTip>
+                </TextBlock>
                 <TextBox Style="{StaticResource ValueBox}" Text="{Binding Settings.CloseDelay, Converter={StaticResource TimeSpanToSecConverter}, UpdateSourceTrigger=PropertyChanged}" />
                 <Button Style="{StaticResource SmallButton}" Content="+" Command="{Binding IncreaseCloseDelayCommand}" />
+                <TextBlock Style="{StaticResource HelpIcon}" Text="?">
+                    <TextBlock.ToolTip>
+                        <ToolTip>
+                            <TextBlock FontSize="14" MaxWidth="320" TextWrapping="Wrap" Text="{x:Static loc:UiText.IncreaseTimeoutHelp}" />
+                        </ToolTip>
+                    </TextBlock.ToolTip>
+                </TextBlock>
             </StackPanel>
 
-            <TextBlock Grid.Row="9" Grid.Column="0" Text="{Binding StatusText}" Foreground="#2D7D46" VerticalAlignment="Center" FontWeight="SemiBold" />
-            <Button Grid.Row="9" Grid.Column="1" Content="&#x0421;&#x043e;&#x0445;&#x0440;&#x0430;&#x043d;&#x0438;&#x0442;&#x044c; &#x043d;&#x0430;&#x0441;&#x0442;&#x0440;&#x043e;&#x0439;&#x043a;&#x0438;" Width="150" Height="30" HorizontalAlignment="Right" Command="{Binding SaveCommand}" Background="#DDEFE4" BorderBrush="#7CB58E" Foreground="#1F5A33" FontWeight="SemiBold" />
+            <TextBlock Grid.Row="10" Grid.Column="0" Text="{Binding StatusText}" Foreground="#2D7D46" VerticalAlignment="Center" FontWeight="SemiBold" />
+            <StackPanel Grid.Row="10" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,8,4,8">
+                <Button Content="{x:Static loc:UiText.SaveSettingsButton}" Width="205" Height="34" Command="{Binding SaveCommand}" Background="#DDEFE4" BorderBrush="#7CB58E" Foreground="#1F5A33" FontWeight="SemiBold" />
+                <TextBlock Style="{StaticResource HelpIcon}" Text="?">
+                    <TextBlock.ToolTip>
+                        <ToolTip>
+                            <TextBlock FontSize="14" MaxWidth="360" TextWrapping="Wrap" Text="{x:Static loc:UiText.SaveSettingsHelp}" />
+                        </ToolTip>
+                    </TextBlock.ToolTip>
+                </TextBlock>
+            </StackPanel>
         </Grid>
     </Border>
 </Window>

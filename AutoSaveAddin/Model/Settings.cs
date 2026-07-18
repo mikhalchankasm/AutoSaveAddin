@@ -29,6 +29,18 @@ namespace AutoSaveAddin.Model
         }
 
         #endregion
+        #region RequireConfirmationToSave : bool - Сохранять только после подтверждения
+
+        private bool _RequireConfirmationToSave;
+
+        /// <summary>Сохранять только после подтверждения</summary>
+        public bool RequireConfirmationToSave
+        {
+            get { return _RequireConfirmationToSave; }
+            set { SetProperty(ref _RequireConfirmationToSave, value); }
+        }
+
+        #endregion
         #region UnclaimAfterSave : bool - Выполнять unclaim all после сохранения
 
         private bool _UnclaimAfterSave;
@@ -72,6 +84,7 @@ namespace AutoSaveAddin.Model
             {
                 Enabled = true,
                 IsNeedRequest = false,
+                RequireConfirmationToSave = false,
                 UnclaimAfterSave = false,
                 Delay = new TimeSpan(2, 0, 0),
                 CloseDelay = new TimeSpan(0 , 1, 0)

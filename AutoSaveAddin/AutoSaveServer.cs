@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms.Integration;
 using System.Windows.Threading;
+using AutoSaveAddin.Localization;
 using AutoSaveAddin.Model;
 using Aveva.Core.Database;
 using Aveva.Core.Utilities.CommandLine;
@@ -23,9 +24,6 @@ namespace AutoSaveAddin
         private static Settings _settings;
         private static CancellationTokenSource _cancellation;
 
-        private const string AutoSaveMessage = "\u0420\u0430\u0431\u043e\u0442\u0430 \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0430.";
-        private const string AutoSaveErrorMessage = "\u0410\u0432\u0442\u043e\u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 \u043d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c.";
-        private const string AutoSaveCancelMessage = "\u0410\u0432\u0442\u043e\u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 \u043e\u0442\u043c\u0435\u043d\u0435\u043d\u043e.";
         private const string AutoSaveServerStart = "AutoSave server started.";
         private const string AutoSaveServerStop = "AutoSave server stopped.";
 
@@ -69,7 +67,7 @@ namespace AutoSaveAddin
                         saving = result == true;
 
                         if (!saving)
-                            Trace.WriteLine(AutoSaveCancelMessage);
+                            Trace.WriteLine(UiText.AutoSaveCancelled);
                     }
 
                     if (saving)
@@ -77,7 +75,7 @@ namespace AutoSaveAddin
                 }
                 catch (Exception ex)
                 {
-                    string message = AutoSaveErrorMessage + " " + ex.Message;
+                    string message = UiText.AutoSaveError + " " + ex.Message;
                     PrintUserMessage(message);
                 }
             }
@@ -99,25 +97,35 @@ namespace AutoSaveAddin
                 }
                 else
                 {
-                    PrintUserMessage(AutoSaveErrorMessage);
+                    PrintUserMessage(UiText.AutoSaveError);
                 }
             }
             catch (Exception ex)
             {
-                string message = AutoSaveErrorMessage + " " + ex.Message;
+                string message = UiText.AutoSaveError + " " + ex.Message;
                 PrintUserMessage(message);
             }
         }
 
         private static string CreateAutoSaveCompletedMessage()
         {
-            return "\u0412\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u043e \u0430\u0432\u0442\u043e\u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 " + DateTime.Now.ToString("HH:mm:ss");
+            return UiText.AutoSaveCompletedPrefix + DateTime.Now.ToString("HH:mm:ss");
         }
 
         private static bool? ShowSaveConfirmation()
         {
             MessageBoxViewModel vm = new MessageBoxViewModel();
             vm.Time = (int)_settings.CloseDelay.TotalSeconds;
+            vm.TimeoutResult = !_settings.RequireConfirmationToSave;
+
+            if (_settings.RequireConfirmationToSave)
+            {
+                vm.Details = UiText.StrictConfirmationDetails;
+            }
+            else
+            {
+                vm.Details = UiText.AutoConfirmationDetails;
+            }
 
             MessageBoxT mb = new MessageBoxT
             {

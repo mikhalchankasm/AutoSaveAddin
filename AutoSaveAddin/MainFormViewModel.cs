@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using AutoSaveAddin.Lib;
+using AutoSaveAddin.Localization;
 using AutoSaveAddin.Model;
 
 namespace AutoSaveAddin
@@ -103,12 +104,9 @@ namespace AutoSaveAddin
             SettingsStorage.Save(Settings);
             _lastSavedSettings = CloneSettings(Settings);
 
-            string message = string.Format(
-                "\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 AutoSave \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u044b. \u0411\u044b\u043b\u043e: {0}. \u0421\u0442\u0430\u043b\u043e: {1}.",
-                DescribeSettings(oldSettings),
-                DescribeSettings(Settings));
+            string message = string.Format(UiText.SettingsSavedMessageFormat, DescribeSettings(oldSettings), DescribeSettings(Settings));
 
-            StatusText = "\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u044b";
+            StatusText = UiText.SettingsSavedStatus;
 
             AutoSaveServer.Restart();
             Dispatcher.CurrentDispatcher.BeginInvoke(
@@ -147,7 +145,7 @@ namespace AutoSaveAddin
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043e\u0442\u043a\u0440\u044b\u0442\u044c \u0444\u0430\u0439\u043b \u043d\u0430\u0441\u0442\u0440\u043e\u0435\u043a:\r\n" + ex.Message,
+                    UiText.OpenSettingsErrorPrefix + "\r\n" + ex.Message,
                     "AutoSaveAddin",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -164,7 +162,7 @@ namespace AutoSaveAddin
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u043f\u0438\u0441\u0430\u0442\u044c JSON:\r\n" + ex.Message,
+                    UiText.WriteJsonErrorPrefix + "\r\n" + ex.Message,
                     "AutoSaveAddin",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -189,6 +187,7 @@ namespace AutoSaveAddin
             {
                 Enabled = settings.Enabled,
                 IsNeedRequest = settings.IsNeedRequest,
+                RequireConfirmationToSave = settings.RequireConfirmationToSave,
                 UnclaimAfterSave = settings.UnclaimAfterSave,
                 Delay = settings.Delay,
                 CloseDelay = settings.CloseDelay
@@ -198,9 +197,10 @@ namespace AutoSaveAddin
         private static string DescribeSettings(Settings settings)
         {
             return string.Format(
-                "\u0432\u043a\u043b={0}, \u0437\u0430\u043f\u0440\u043e\u0441={1}, unclaim={2}, \u0438\u043d\u0442\u0435\u0440\u0432\u0430\u043b={3} \u043c\u0438\u043d, \u043e\u0436\u0438\u0434\u0430\u043d\u0438\u0435={4} \u0441\u0435\u043a",
+                UiText.SettingsDescriptionFormat,
                 settings.Enabled,
                 settings.IsNeedRequest,
+                settings.RequireConfirmationToSave,
                 settings.UnclaimAfterSave,
                 (int)Math.Round(settings.Delay.TotalMinutes),
                 (int)Math.Round(settings.CloseDelay.TotalSeconds));

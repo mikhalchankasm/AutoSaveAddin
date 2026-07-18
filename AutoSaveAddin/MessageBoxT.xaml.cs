@@ -97,7 +97,7 @@ namespace AutoSaveAddin
             
             if (vm.Time <= 0)
             {
-                Close(true);
+                Close(vm.TimeoutResult);
             }
         }
     }

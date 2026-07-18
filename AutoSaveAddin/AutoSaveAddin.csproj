@@ -86,6 +86,7 @@
         <Compile Include="Environment.cs" />
         <Compile Include="Lib\NotifyBase.cs" />
         <Compile Include="Lib\RelayCommand.cs" />
+        <Compile Include="Localization\UiText.cs" />
         <Compile Include="MainForm.xaml.cs" />
         <Compile Include="MainFormViewModel.cs" />
         <Compile Include="MessageBoxT.xaml.cs">
