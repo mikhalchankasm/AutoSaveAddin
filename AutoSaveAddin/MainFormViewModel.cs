@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
@@ -18,13 +19,33 @@ namespace AutoSaveAddin
         public Settings Settings
         {
             get { return _settings; }
-            set { SetProperty(ref _settings, value); }
+            set
+            {
+                if (_settings != null)
+                    _settings.PropertyChanged -= Settings_PropertyChanged;
+
+                if (SetProperty(ref _settings, value))
+                    RefreshComputedText();
+
+                if (_settings != null)
+                    _settings.PropertyChanged += Settings_PropertyChanged;
+            }
         }
 
         public string StatusText
         {
             get { return _statusText; }
             set { SetProperty(ref _statusText, value); }
+        }
+
+        public string BannerTitle
+        {
+            get { return Settings != null && Settings.Enabled ? UiText.EnabledBannerTitle : UiText.DisabledBannerTitle; }
+        }
+
+        public string BannerDetail
+        {
+            get { return Settings != null && Settings.Enabled ? UiText.EnabledBannerDetail : UiText.DisabledBannerDetail; }
         }
 
         public MainFormViewModel()
@@ -35,6 +56,7 @@ namespace AutoSaveAddin
         }
 
         private ICommand _saveCommand;
+        private ICommand _resetCommand;
         private ICommand _increaseDelayCommand;
         private ICommand _decreaseDelayCommand;
         private ICommand _increaseCloseDelayCommand;
@@ -47,6 +69,14 @@ namespace AutoSaveAddin
             get
             {
                 return _saveCommand ?? (_saveCommand = new RelayCommand(OnSaveCommandExecuted));
+            }
+        }
+
+        public ICommand ResetCommand
+        {
+            get
+            {
+                return _resetCommand ?? (_resetCommand = new RelayCommand(OnResetCommandExecuted));
             }
         }
 
@@ -106,12 +136,30 @@ namespace AutoSaveAddin
 
             string message = string.Format(UiText.SettingsSavedMessageFormat, DescribeSettings(oldSettings), DescribeSettings(Settings));
 
-            StatusText = UiText.SettingsSavedStatus;
+            StatusText = string.Format(UiText.SettingsSavedAtFormat, DateTime.Now.ToString("HH:mm"));
 
             AutoSaveServer.Restart();
             Dispatcher.CurrentDispatcher.BeginInvoke(
                 new Action(delegate { ShowSavedMessage(message); }),
                 DispatcherPriority.ApplicationIdle);
+        }
+
+        private void OnResetCommandExecuted(object p)
+        {
+            Settings = CloneSettings(_lastSavedSettings);
+            StatusText = string.Empty;
+        }
+
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Enabled")
+                RefreshComputedText();
+        }
+
+        private void RefreshComputedText()
+        {
+            OnPropertyChanged("BannerTitle");
+            OnPropertyChanged("BannerDetail");
         }
 
         private static void ShowSavedMessage(string message)
