@@ -2,6 +2,8 @@
 
 Small AVEVA E3D addin for timed `SaveWork`.
 
+![AutoSaveAddin settings](settings.png)
+
 ## Install
 
 Download the latest release zip from GitHub Releases.
